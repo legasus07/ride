@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRide - Smart Ride Sharing</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles derived from Tailwind */
+        :root {
+            --color-green-50: #f0fdf4;
+            --color-blue-50: #eff6ff;
+            --color-gray-900: #111827;
+            --color-gray-800: #1f2937;
+            --color-gray-700: #374151;
+            --color-gray-600: #4b5563;
+            --color-gray-500: #6b7280;
+            --color-gray-400: #9ca3af;
+            --color-gray-300: #d1d5db;
+            --color-gray-200: #e5e7eb;
+            --color-gray-100: #f3f4f6;
+            --color-white: #ffffff;
+            --color-green-600: #16a34a;
+            --color-green-700: #15803d;
+            --color-blue-600: #2563eb;
+            --color-blue-700: #1d4ed8;
+            --color-green-100: #dcfce7;
+            --color-green-800: #166534;
+            --color-green-300: #86efad;
+            --color-blue-500: #3b82f6;
+            --color-red-500: #ef4444;
+            --color-yellow-400: #facc15;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, var(--color-green-50), var(--color-blue-50));
+            padding: 1.5rem; /* p-6 */
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Header styles */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem; /* mb-10 */
+        }
+
+        header h1 {
+            font-size: 3rem; /* text-5xl */
+            font-weight: 800; /* font-extrabold */
+            color: var(--color-gray-900);
+            letter-spacing: -0.025em; /* tracking-tight */
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+
+        header h1 span {
+            color: var(--color-green-600);
+        }
+
+        header p {
+            font-size: 1.25rem; /* text-xl */
+            color: var(--color-gray-700);
+            margin-top: 1rem; /* mt-4 */
+        }
+
+        /* Input and Section Styling */
+        .section-card {
+            max-width: 42rem; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+            background-color: var(--color-white);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 2rem; /* p-8 */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* space-y-6 */
+            transition: transform 0.3s ease-in-out; /* transition-transform duration-300 */
+            margin-bottom: 2.5rem; /* Added margin for separation */
+        }
+
+        .section-card:hover {
+            transform: scale(1.01); /* hover:scale-[1.01] */
+        }
+
+        .section-card h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: var(--color-gray-800);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* gap-4 */
+        }
+
+        .input-field, .select-field {
+            padding: 0.75rem; /* p-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid var(--color-gray-300);
+            transition: border-color 0.2s ease-in-out; /* transition-colors */
+            width: 100%; /* Ensures full width */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            background-color: var(--color-white); /* Ensure background for select */
+        }
+
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: var(--color-green-500); /* focus:border-green-500 */
+        }
+
+        .primary-button {
+            width: 100%;
+            background-color: var(--color-green-600);
+            color: var(--color-white);
+            font-weight: 700; /* font-bold */
+            padding: 0.75rem 1rem; /* py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out; /* transition-transform duration-200 */
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .primary-button:hover {
+            background-color: var(--color-green-700); /* hover:bg-green-700 */
+            transform: scale(1.05); /* hover:scale-105 */
+        }
+
+        .primary-button .fas {
+            margin-right: 0.5rem; /* mr-2 */
+        }
+
+        /* Checkbox/Radio Styling */
+        .checkbox-group, .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-gray-700);
+            font-size: 0.9rem;
+        }
+        .radio-group {
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            transform: scale(1.2); /* Make checkbox/radio slightly larger */
+            cursor: pointer;
+        }
+
+        /* Available Rides Section */
+        .rides-section {
+            margin-top: 4rem; /* mt-16 */
+            max-width: 56rem; /* max-w-4xl */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .rides-section h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: var(--color-gray-800);
+            margin-bottom: 2rem; /* mb-8 */
+            margin-top: 0;
+        }
+
+        .rides-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* grid-cols-1 */
+            gap: 2rem; /* gap-8 */
+        }
+
+        .ride-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-xl */
+            border-radius: 1rem; /* rounded-2xl */
+            overflow: hidden;
+            background-color: var(--color-white);
+            transition: transform 0.2s ease-in-out; /* transition-transform duration-200 */
+        }
+
+        .ride-card:hover {
+            transform: scale(1.03); /* hover:scale-103 */
+        }
+
+        .card-content {
+            padding: 1.5rem; /* p-6 */
+        }
+
+        .ride-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem; /* mb-4 */
+            color: var(--color-gray-700);
+        }
+
+        .ride-header .fas {
+            color: var(--color-green-500);
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.5rem; /* text-2xl */
+        }
+
+        .ride-header h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            margin: 0;
+        }
+
+        .ride-header h3 span {
+            color: var(--color-gray-500);
+        }
+
+        .ride-details {
+            font-size: 0.875rem; /* text-sm */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* space-y-2 */
+            color: var(--color-gray-600);
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        .ride-details p {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .ride-details p span {
+            font-weight: 600; /* font-semibold */
+            color: var(--color-gray-800);
+            width: 6rem; /* w-24 */
+        }
+
+        .map-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 1.5rem; /* mb-6 */
+            border-radius: 0.5rem; /* Added for consistency */
+            overflow: hidden; /* Ensures map content stays within rounded corners */
+        }
+
+        .ride-actions {
+            display: flex;
+            gap: 1rem; /* gap-4 */
+            margin-top: 1.5rem; /* mt-6 */
+        }
+
+        .action-button {
+            flex: 1; /* flex-1 */
+            padding: 0.75rem 1rem; /* py-3 */
+            font-weight: 600; /* font-semibold */
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05); /* hover:scale-105 */
+        }
+
+        .request-button {
+            background-color: var(--color-blue-600);
+            color: var(--color-white);
+        }
+
+        .request-button:hover {
+            background-color: var(--color-blue-700);
+        }
+
+        .pay-button {
+            background-color: var(--color-green-100);
+            color: var(--color-green-800);
+            border: 1px solid var(--color-green-300);
+        }
+
+        .pay-button:hover {
+            background-color: var(--color-green-200);
+        }
+
+        .pay-button .fas {
+            margin-right: 0.5rem; /* mr-2 */
+        }
+
+        .no-rides-message {
+            text-align: center;
+            color: var(--color-gray-600);
+            font-size: 1.25rem; /* text-xl */
+            padding-top: 3rem; /* py-12 */
+            padding-bottom: 3rem;
+        }
+
+        .no-rides-message .fas {
+            display: inline-block;
+            margin-right: 0.5rem; /* mr-2 */
+            color: var(--color-gray-400);
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: fixed;
+            bottom: 6rem; /* bottom-24 */
+            right: 1.5rem; /* right-6 */
+            width: 20rem; /* w-80 */
+            max-height: 30rem; /* max-h-[480px] */
+            background-color: var(--color-white);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            border-radius: 1rem; /* rounded-2xl */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--color-gray-200);
+            /* Initial state for animation */
+            transform: translateY(200px);
+            opacity: 0;
+            visibility: hidden; /* Hidden by default */
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s;
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .chat-window.visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            background-color: var(--color-green-600);
+            color: var(--color-white);
+            padding: 1rem; /* p-4 */
+            font-weight: 700; /* font-bold */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .chat-header button:hover {
+            color: var(--color-gray-100);
+        }
+
+        .chat-messages {
+            flex: 1; /* flex-1 */
+            overflow-y: auto;
+            padding: 1rem; /* p-4 */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* space-y-4 */
+        }
+
+        .chat-message-row {
+            display: flex;
+        }
+
+        .chat-message-row.user-message {
+            justify-content: flex-end; /* justify-end */
+        }
+
+        .chat-message-row.bot-message {
+            justify-content: flex-start; /* justify-start */
+        }
+
+        .chat-bubble {
+            padding: 0.75rem; /* p-3 */
+            border-radius: 0.75rem; /* rounded-xl */
+            max-width: 80%; /* max-w-[80%] */
+            font-size: 0.875rem; /* text-sm */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+            /* Animation for chat bubbles */
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out; /* spring-like transition */
+        }
+
+        .chat-bubble.visible {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .chat-bubble.user {
+            background-color: var(--color-blue-500);
+            color: var(--color-white);
+            border-bottom-right-radius: 0; /* rounded-br-none */
+        }
+
+        .chat-bubble.bot {
+            background-color: var(--color-gray-200);
+            color: var(--color-gray-800);
+            border-bottom-left-radius: 0; /* rounded-bl-none */
+        }
+
+        .chat-input-area {
+            padding: 1rem; /* p-4 */
+            border-top: 1px solid var(--color-gray-200);
+            background-color: var(--color-gray-50);
+            display: flex;
+            gap: 0.5rem; /* gap-2 */
+        }
+
+        .chat-input-field {
+            flex: 1;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid var(--color-gray-300);
+            padding: 0.5rem 0.75rem;
+            box-sizing: border-box;
+        }
+
+        .chat-send-button {
+            background-color: var(--color-green-600);
+            color: var(--color-white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .chat-send-button:hover {
+            background-color: var(--color-green-700);
+        }
+
+        /* Floating Chat Toggle Button */
+        .chat-toggle-button {
+            position: fixed;
+            bottom: 1.5rem; /* bottom-6 */
+            right: 1.5rem; /* right-6 */
+            border-radius: 9999px; /* rounded-full */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            background-color: var(--color-green-600);
+            color: var(--color-white);
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem; /* w-6 h-6 */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .chat-toggle-button:hover {
+            background-color: var(--color-green-700);
+            transform: scale(1.1); /* hover:scale-110 */
+        }
+
+        .chat-toggle-button:active {
+            transform: scale(0.9); /* tap:scale-90 */
+        }
+
+        /* Authentication Section */
+        .auth-section {
+            max-width: 28rem; /* max-w-md */
+            margin: 4rem auto; /* mx-auto mt-16 */
+            background-color: var(--color-white);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 1.5rem;
+            padding: 2.5rem; /* p-10 */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* space-y-6 */
+            text-align: center;
+
+            /* Transition properties */
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .auth-section.hidden-transition {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none; /* Disable interactions during transition */
+        }
+
+        .auth-section h2 {
+            font-size: 2rem; /* text-3xl */
+            font-weight: 700;
+            color: var(--color-gray-800);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .auth-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-toggle-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .auth-toggle-button {
+            background-color: var(--color-gray-100);
+            color: var(--color-gray-700);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-gray-300);
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .auth-toggle-button.active {
+            background-color: var(--color-green-600);
+            color: var(--color-white);
+            border-color: var(--color-green-600);
+        }
+
+        .auth-toggle-button:hover:not(.active) {
+            background-color: var(--color-gray-200);
+        }
+
+        .auth-submit-button {
+            width: 100%;
+            background-color: var(--color-blue-600);
+            color: var(--color-white);
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+
+        .auth-submit-button:hover {
+            background-color: var(--color-blue-700);
+        }
+
+        .user-status {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--color-gray-700);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem; /* Added padding */
+            background-color: var(--color-white); /* Added background */
+            border-radius: 0.5rem; /* Added border-radius */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Added shadow */
+            max-width: fit-content; /* Adjust width to content */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logout-button {
+            background-color: var(--color-red-500);
+            color: var(--color-white);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .logout-button:hover {
+            background-color: #dc2626; /* darker red */
+        }
+
+        /* Message Box */
+        .message-box {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: var(--color-white);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 1001; /* Above chat window */
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+
+        .message-box.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .message-box.success {
+            background-color: var(--color-green-600);
+        }
+
+        .message-box.error {
+            background-color: var(--color-red-500);
+        }
+
+        .message-box.info {
+            background-color: var(--color-blue-600);
+        }
+
+        .message-box.warning {
+            background-color: var(--color-yellow-400);
+            color: var(--color-gray-900);
+        }
+
+        /* Hide main content when not logged in */
+        .main-app-content {
+            /* Transition properties */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            pointer-events: none; /* Disable interactions when hidden */
+            position: absolute; /* Allow it to overlap auth section during transition */
+            width: 100%;
+            left: 0;
+            top: 0;
+            padding-top: 1.5rem; /* Match body padding */
+            padding-bottom: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .main-app-content.visible-transition {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto; /* Enable interactions when visible */
+            position: relative; /* Take up space when fully visible */
+        }
+
+
+        /* Media Queries for Responsiveness */
+        @media (min-width: 768px) { /* md breakpoint */
+            .input-group {
+                flex-direction: row; /* md:flex-row */
+            }
+            .rides-grid {
+                grid-template-columns: 1fr 1fr; /* md:grid-cols-2 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Eco<span style="color: var(--color-green-600);">Ride</span></h1>
+        <p>Connect, Share, and Save: Smart Ride Sharing for a Better Planet.</p>
+    </header>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <h2 id="auth-heading">Login to EcoRide</h2>
+        <div class="auth-toggle-buttons">
+            <button id="show-login-button" class="auth-toggle-button active">Login</button>
+            <button id="show-signup-button" class="auth-toggle-button">Sign Up</button>
+        </div>
+
+        <div id="login-form" class="auth-form-group">
+            <input type="email" id="login-email" placeholder="Email" class="input-field">
+            <input type="password" id="login-password" placeholder="Password" class="input-field">
+            <button id="login-submit-button" class="auth-submit-button">Login</button>
+        </div>
+
+        <div id="signup-form" class="auth-form-group" style="display: none;">
+            <input type="email" id="signup-email" placeholder="Email" class="input-field">
+            <input type="password" id="signup-password" placeholder="Password" class="input-field">
+            <button id="signup-submit-button" class="auth-submit-button">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- User Status Display -->
+    <div id="user-status" class="user-status" style="display: none;">
+        Logged in as: <span id="user-email"></span> (ID: <span id="user-id"></span>)
+        <button id="logout-button" class="logout-button">Logout</button>
+    </div>
+
+    <!-- Main Application Content (Hidden by default until logged in) -->
+    <div id="main-app-content" class="main-app-content">
+        <!-- Offer a Ride Section -->
+        <div class="offer-ride-section section-card">
+            <h2>Offer a Ride</h2>
+            <div class="input-group">
+                <input type="text" id="offer-pickup-location" placeholder="Pickup Location in Jaipur" class="input-field">
+                <input type="text" id="offer-drop-location" placeholder="Drop Location in Jaipur" class="input-field">
+                
+                <select id="offer-vehicle-type" class="select-field">
+                    <option value="Car">Car</option>
+                    <option value="Auto">Auto</option>
+                    <option value="Bike">Bike</option>
+                </select>
+
+                <input type="number" id="offer-seats" placeholder="Seats Available for Sharing" class="input-field" min="0" max="4">
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="personal-ride-option">
+                    <label for="personal-ride-option">Book a Personal Ride (No Sharing)</label>
+                </div>
+
+                <input type="number" id="offer-price" placeholder="Price (₹)" class="input-field" min="0">
+                <input type="datetime-local" id="offer-time" class="input-field">
+            </div>
+            <button id="offer-ride-button" class="primary-button">
+                <i class="fas fa-car"></i> Offer Ride
+            </button>
+        </div>
+
+        <div class="search-section section-card">
+            <h2>Find Your Ride</h2>
+            <div class="input-group">
+                <input type="text" id="pickup-location" placeholder="Pickup Location in Jaipur" class="input-field">
+                <input type="text" id="drop-location" placeholder="Drop Location in Jaipur" class="input-field">
+                
+                <select id="search-vehicle-type" class="select-field">
+                    <option value="">Any Vehicle Type</option>
+                    <option value="Car">Car</option>
+                    <option value="Auto">Auto</option>
+                    <option value="Bike">Bike</option>
+                </select>
+
+                <div class="radio-group">
+                    <input type="radio" id="search-shared-ride" name="ride-type" value="shared" checked>
+                    <label for="search-shared-ride">Shared Ride</label>
+                    <input type="radio" id="search-personal-ride" name="ride-type" value="personal">
+                    <label for="search-personal-ride">Personal Ride</label>
+                </div>
+            </div>
+            <button id="find-rides-button" class="primary-button">
+                <i class="fas fa-search"></i> Find Shared Rides
+            </button>
+        </div>
+
+        <section class="rides-section">
+            <h2 id="available-rides-heading">Available Shared Rides</h2>
+            <div id="matched-rides-container" class="rides-grid">
+                <!-- Ride cards will be dynamically inserted here -->
+            </div>
+            <p id="no-rides-message" class="no-rides-message" style="display: block;">
+                <i class="fas fa-map-marker-alt"></i>
+                Enter your pickup and drop locations to find available rides.
+            </p>
+        </section>
+    </div>
+
+    <!-- Interactive Chat Window -->
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <span>EcoRide Support</span>
+            <button id="close-chat-button">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <!-- Chat messages will be dynamically inserted here -->
+            <div class="chat-message-row bot-message">
+                <div class="chat-bubble bot visible">Hi! Welcome to EcoRide. How can I help you book a ride?</div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input-field" placeholder="Type your message..." class="chat-input-field">
+            <button id="chat-send-button" class="chat-send-button">Send</button>
+        </div>
+    </div>
+
+    <!-- Floating Chat Toggle Button -->
+    <button id="chat-toggle-button" class="chat-toggle-button" aria-label="Toggle chat support">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Custom Message Box -->
+    <div id="message-box" class="message-box"></div>
+
+    <script type="module">
+        // Firebase imports - using CDN for direct HTML file
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            signInWithCustomToken, // For Canvas environment
+            signInAnonymously // For Canvas environment fallback
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            onSnapshot, 
+            where, 
+            serverTimestamp,
+            doc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        let app;
+        let auth;
+        let db;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } else {
+            console.error("Firebase config not found. Firebase services will not be initialized.");
+            document.addEventListener("DOMContentLoaded", () => {
+                showMessage("Firebase is not configured. Please check the application setup.", "error", 5000);
+            });
+        }
+
+        // State variables (mimicking React's useState)
+        let pickup = "";
+        let drop = "";
+        let matchedRides = [];
+        let chatVisible = false;
+        let userLocation = null;
+        let directions = null;
+        let chatMessages = []; // Will be populated from Firestore
+        let userInput = "";
+        let loggedInUser = null; // Stores the current authenticated user
+        let currentAuthMode = 'login'; // 'login' or 'signup'
+        let currentUserId = null; // Stores the Firebase UID or anonymous ID
+
+        // Backend data receiver email (replace with your actual email)
+        const BACKEND_RECEIVER_EMAIL = 'YOUR_RECEIVER_EMAIL@example.com';
+
+
+        // DOM Element References
+        const pickupInput = document.getElementById("pickup-location");
+        const dropInput = document.getElementById("drop-location");
+        const findRidesButton = document.getElementById("find-rides-button");
+        const matchedRidesContainer = document.getElementById("matched-rides-container");
+        const noRidesMessage = document.getElementById("no-rides-message");
+        const chatWindow = document.getElementById("chat-window");
+        const chatToggleButton = document.getElementById("chat-toggle-button");
+        const closeChatButton = document.getElementById("close-chat-button");
+        const chatMessagesDiv = document.getElementById("chat-messages");
+        const chatInputField = document.getElementById("chat-input-field");
+        const chatSendButton = document.getElementById("chat-send-button");
+
+        // Auth DOM Elements
+        const authSection = document.getElementById('auth-section');
+        const authHeading = document.getElementById('auth-heading');
+        const showLoginButton = document.getElementById('show-login-button');
+        const showSignupButton = document.getElementById('show-signup-button');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginSubmitButton = document.getElementById('login-submit-button');
+        const signupEmailInput = document.getElementById('signup-email');
+        const signupPasswordInput = document.getElementById('signup-password');
+        const signupSubmitButton = document.getElementById('signup-submit-button');
+        const userStatusDiv = document.getElementById('user-status');
+        const userEmailSpan = document.getElementById('user-email');
+        const userIdSpan = document.getElementById('user-id'); // New element for user ID
+        const logoutButton = document.getElementById('logout-button');
+        const mainAppContent = document.getElementById('main-app-content');
+        const messageBox = document.getElementById('message-box');
+
+        // Offer Ride DOM Elements
+        const offerRideSection = document.getElementById('offer-ride-section');
+        const offerPickupInput = document.getElementById('offer-pickup-location');
+        const offerDropInput = document.getElementById('offer-drop-location');
+        const offerVehicleTypeSelect = document.getElementById('offer-vehicle-type'); // New
+        const offerSeatsInput = document.getElementById('offer-seats');
+        const personalRideOptionCheckbox = document.getElementById('personal-ride-option'); // New
+        const offerPriceInput = document.getElementById('offer-price');
+        const offerTimeInput = document.getElementById('offer-time');
+        const offerRideButton = document.getElementById('offer-ride-button');
+
+        // Search Ride DOM Elements
+        const searchVehicleTypeSelect = document.getElementById('search-vehicle-type'); // New
+        const searchSharedRideRadio = document.getElementById('search-shared-ride'); // New
+        const searchPersonalRideRadio = document.getElementById('search-personal-ride'); // New
+
+        // Jaipur coordinates for Places Autocomplete bias
+        const JAIPUR_BOUNDS = {
+            north: 27.05,
+            south: 26.75,
+            east: 75.95,
+            west: 75.60,
+        };
+        const JAIPUR_CENTER = { lat: 26.9124, lng: 75.7873 };
+
+
+        // --- Utility Functions ---
+
+        // Function to display messages to the user
+        function showMessage(message, type = 'info', duration = 3000) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box visible ${type}`; // Reset classes and add new ones
+            clearTimeout(messageBox.timeoutId); // Clear any existing timeout
+
+            messageBox.timeoutId = setTimeout(() => {
+                messageBox.classList.remove('visible');
+            }, duration);
+        }
+
+        // Function to update the chat UI
+        function updateChatUI() {
+            chatMessagesDiv.innerHTML = ''; // Clear existing messages
+            chatMessages.forEach((msg, idx) => {
+                const messageRow = document.createElement('div');
+                messageRow.classList.add('chat-message-row');
+                messageRow.classList.add(msg.senderId === currentUserId ? 'user-message' : 'bot-message'); // Use senderId for user/bot
+
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('chat-bubble');
+                messageBubble.classList.add(msg.senderId === currentUserId ? 'user' : 'bot'); // Use senderId for user/bot classes
+                messageBubble.textContent = msg.text;
+
+                // Add a small delay for animation effect
+                setTimeout(() => {
+                    messageBubble.classList.add('visible');
+                }, idx * 50); // Stagger animation
+
+                messageRow.appendChild(messageBubble);
+                chatMessagesDiv.appendChild(messageRow);
+            });
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll to bottom
+        }
+
+        // Function to render ride cards
+        function renderRideCards() {
+            matchedRidesContainer.innerHTML = ''; // Clear existing cards
+            if (matchedRides.length === 0) {
+                noRidesMessage.style.display = 'block';
+            } else {
+                noRidesMessage.style.display = 'none';
+                matchedRides.forEach((ride, index) => {
+                    const isPersonal = ride.isPersonalRide || false;
+                    const seatsDisplay = isPersonal ? 'Personal Ride' : `Seats: ${ride.seatsAvailable} available`;
+                    const requestButtonDisplay = isPersonal ? 'none' : 'flex'; // Hide for personal rides
+
+                    const rideCardHtml = `
+                        <div class="ride-card section-card">
+                            <div class="card-content">
+                                <div class="ride-header">
+                                    <i class="fas fa-route"></i>
+                                    <h3>${ride.from} <span style="color: var(--color-gray-500);">→</span> ${ride.to}</h3>
+                                </div>
+                                <div class="ride-details">
+                                    <p><span>Driver:</span> ${ride.driverEmail || 'N/A'}</p>
+                                    <p><span>Vehicle:</span> ${ride.vehicleType || 'N/A'}</p>
+                                    <p><span>${isPersonal ? 'Type:' : 'Seats:'}</span> ${seatsDisplay}</p>
+                                    <p><span>Time:</span> ${new Date(ride.departureTime).toLocaleString()}</p>
+                                </div>
+                                <div class="map-container" id="map-${ride.id}"></div>
+                                <div class="ride-actions">
+                                    <button class="action-button request-button" data-ride-id="${ride.id}" style="display: ${requestButtonDisplay};">Request to Join</button>
+                                    <button class="action-button pay-button">
+                                        <i class="fas fa-credit-card"></i> Pay ₹${ride.price}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    matchedRidesContainer.insertAdjacentHTML('beforeend', rideCardHtml);
+
+                    // Initialize map for each card
+                    setTimeout(() => { // Small delay to ensure DOM is ready
+                        initMap(ride.id, userLocation, { lat: ride.dropLat, lng: ride.dropLng }, index === 0 ? directions : null);
+                    }, 0);
+                });
+
+                // Add event listeners for "Request to Join" buttons
+                document.querySelectorAll('.request-button').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const rideId = event.target.dataset.rideId;
+                        if (rideId && loggedInUser) {
+                            try {
+                                const rideRef = doc(db, `artifacts/${appId}/public/data/rides`, rideId);
+                                const ride = matchedRides.find(r => r.id === rideId);
+                                const newRequest = {
+                                    userId: currentUserId,
+                                    userEmail: loggedInUser.email,
+                                    status: 'pending',
+                                    timestamp: serverTimestamp()
+                                };
+                                await updateDoc(rideRef, {
+                                    requests: [...(ride.requests || []), newRequest]
+                                });
+                                showMessage('Ride request sent!', 'success');
+
+                                // Simulate sending email to backend receiver
+                                console.log(`--- Backend Notification (Ride Request) ---`);
+                                console.log(`To: ${BACKEND_RECEIVER_EMAIL}`);
+                                console.log(`Subject: New Ride Request for Ride ID: ${rideId}`);
+                                console.log(`Body: User ${loggedInUser.email} (ID: ${currentUserId}) has requested to join the ride from ${ride.from} to ${ride.to} on ${new Date(ride.departureTime).toLocaleString()}.`);
+                                console.log(`Request Details:`, newRequest);
+                                console.log(`-----------------------------------------`);
+
+                            } catch (error) {
+                                console.error("Error sending ride request:", error);
+                                showMessage('Failed to send ride request.', 'error');
+                            }
+                        } else {
+                            showMessage('Please login to request a ride.', 'warning');
+                        }
+                    });
+                });
+            }
+        }
+
+        // Function to dynamically load Google Maps script
+        function loadGoogleMapsScript(apiKey, callback) {
+            if (window.google && window.google.maps && window.google.maps.places) {
+                callback(); // Already loaded
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`; // Load places library
+            script.async = true;
+            script.defer = true;
+            script.onload = callback;
+            script.onerror = () => {
+                console.error("Failed to load Google Maps script. Check your API key and network connection.");
+                showMessage("Failed to load maps. Check your API key.", "error", 5000);
+            };
+            document.head.appendChild(script);
+        }
+
+        // Function to initialize Google Map for a specific ride card
+        function initMap(mapId, origin, destination, directionsResult) {
+            const mapElement = document.getElementById(`map-${mapId}`);
+            if (!mapElement || !window.google || !window.google.maps) {
+                console.warn(`Map element with ID map-${mapId} not found or Google Maps not loaded.`);
+                return;
+            }
+
+            const mapOptions = {
+                center: origin || destination,
+                zoom: 10,
+                mapTypeId: window.google.maps.MapTypeId.ROADMAP
+            };
+            const map = new window.google.maps.Map(mapElement, mapOptions);
+
+            if (origin && origin.lat !== 0 && origin.lng !== 0) { // Only add marker if valid origin
+                new window.google.maps.Marker({
+                    position: origin,
+                    map: map,
+                    label: "You",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+            }
+            if (destination && destination.lat !== 0 && destination.lng !== 0) { // Only add marker if valid destination
+                new window.google.maps.Marker({
+                    position: destination,
+                    map: map,
+                    label: "Ride",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                });
+            }
+
+            if (directionsResult) {
+                const directionsRenderer = new window.google.maps.DirectionsRenderer();
+                directionsRenderer.setMap(map);
+                directionsRenderer.setDirections(directionsResult);
+            }
+        }
+
+        // Initialize Places Autocomplete for input fields
+        function initAutocomplete() {
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                console.warn("Google Places library not loaded. Autocomplete will not work.");
+                return;
+            }
+
+            const autocompleteOptions = {
+                bounds: new window.google.maps.LatLngBounds(
+                    new window.google.maps.LatLng(JAIPUR_BOUNDS.south, JAIPUR_BOUNDS.west),
+                    new window.google.maps.LatLng(JAIPUR_BOUNDS.north, JAIPUR_BOUNDS.east)
+                ),
+                strictBounds: false, // Allow results outside bounds but bias towards them
+                componentRestrictions: { country: "in" } // Restrict to India
+            };
+
+            const offerPickupAutocomplete = new window.google.maps.places.Autocomplete(offerPickupInput, autocompleteOptions);
+            const offerDropAutocomplete = new window.google.maps.places.Autocomplete(offerDropInput, autocompleteOptions);
+            const searchPickupAutocomplete = new window.google.maps.places.Autocomplete(pickupInput, autocompleteOptions);
+            const searchDropAutocomplete = new window.google.maps.places.Autocomplete(dropInput, autocompleteOptions);
+
+            // Add listeners to store place details (lat/lng) if needed for precise mapping
+            // For now, we'll just use the text value for Firestore `from` and `to` fields
+            // and rely on a dummy lat/lng for mapping if not explicitly geocoded.
+        }
+
+
+        // --- Authentication Functions ---
+
+        async function handleInitialAuth() {
+            if (!auth) {
+                console.error("Firebase Auth not initialized.");
+                return;
+            }
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } else {
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
+                }
+            } catch (error) {
+                console.error("Initial authentication failed:", error);
+                showMessage(`Authentication failed: ${error.message}`, 'error');
+            }
+        }
+
+        function updateAuthUI() {
+            if (loggedInUser) {
+                // Hide auth section with transition
+                authSection.classList.add('hidden-transition');
+                authSection.addEventListener('transitionend', function handler() {
+                    authSection.style.display = 'none';
+                    authSection.removeEventListener('transitionend', handler);
+                });
+
+                // Show main content with transition
+                mainAppContent.style.display = 'block'; // Make it block before adding visible class
+                setTimeout(() => { // Small delay to ensure display change is registered before transition
+                    mainAppContent.classList.add('visible-transition');
+                }, 10);
+                
+                userStatusDiv.style.display = 'flex';
+                userEmailSpan.textContent = loggedInUser.email || 'Anonymous';
+                userIdSpan.textContent = loggedInUser.uid; // Display user ID
+                showMessage(`Welcome, ${loggedInUser.email || 'Guest'}!`, 'success');
+                // Start listening to Firestore data only when authenticated
+                listenToRides();
+                listenToChatMessages();
+            } else {
+                // Hide main content with transition
+                mainAppContent.classList.remove('visible-transition');
+                mainAppContent.addEventListener('transitionend', function handler() {
+                    mainAppContent.style.display = 'none';
+                    mainAppContent.removeEventListener('transitionend', handler);
+                });
+
+                // Show auth section with transition
+                authSection.style.display = 'flex'; // Make it flex before removing hidden class
+                setTimeout(() => { // Small delay to ensure display change is registered before transition
+                    authSection.classList.remove('hidden-transition');
+                }, 10);
+
+                userStatusDiv.style.display = 'none';
+                showMessage('Please login or sign up to continue.', 'info');
+                // Clear data if logged out
+                matchedRides = [];
+                chatMessages = [];
+                renderRideCards();
+                updateChatUI();
+            }
+        }
+
+        async function handleSignup() {
+            const email = signupEmailInput.value;
+            const password = signupPasswordInput.value;
+
+            if (!email || !password) {
+                showMessage('Please enter both email and password.', 'warning');
+                return;
+            }
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage('Account created successfully!', 'success');
+                signupEmailInput.value = '';
+                signupPasswordInput.value = '';
+                // onAuthStateChanged will handle updating loggedInUser and UI
+            } catch (error) {
+                console.error("Signup error:", error);
+                let errorMessage = "Failed to create account.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Email already in use. Try logging in or use a different email.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                }
+                showMessage(`Error: ${errorMessage}`, 'error');
+            }
+        }
+
+        async function handleLogin() {
+            const email = loginEmailInput.value;
+            const password = loginPasswordInput.value;
+
+            if (!email || !password) {
+                showMessage('Please enter both email and password.', 'warning');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage('Logged in successfully!', 'success');
+                loginEmailInput.value = '';
+                loginPasswordInput.value = '';
+                // onAuthStateChanged will handle updating loggedInUser and UI
+            } catch (error) {
+                console.error("Login error:", error);
+                let errorMessage = "Failed to login.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                }
+                showMessage(`Error: ${errorMessage}`, 'error');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                showMessage('Logged out successfully.', 'info');
+                // onAuthStateChanged will handle updating loggedInUser and UI
+            } catch (error) {
+                console.error("Logout error:", error);
+                showMessage(`Error: Failed to logout: ${error.message}`, 'error');
+            }
+        }
+
+        // --- Firestore Data Operations ---
+
+        // Listen for real-time updates to rides
+        function listenToRides() {
+            if (!db) return; // Ensure Firestore is initialized
+            const ridesCollectionRef = collection(db, `artifacts/${appId}/public/data/rides`);
+            onSnapshot(ridesCollectionRef, (snapshot) => {
+                const ridesData = [];
+                snapshot.forEach(doc => {
+                    ridesData.push({ id: doc.id, ...doc.data() });
+                });
+                matchedRides = ridesData; // Update state
+                renderRideCards(); // Re-render UI with new data
+            }, (error) => {
+                console.error("Error listening to rides:", error);
+                showMessage("Failed to load rides. Please try again later.", "error");
+            });
+        }
+
+        // Listen for real-time updates to chat messages
+        function listenToChatMessages() {
+            if (!db) return; // Ensure Firestore is initialized
+            const chatCollectionRef = collection(db, `artifacts/${appId}/public/data/chat_messages`);
+            // Order by timestamp for correct display order
+            const q = query(chatCollectionRef); // Add orderBy here if needed: orderBy('timestamp', 'asc')
+            
+            onSnapshot(q, (snapshot) => {
+                const messagesData = [];
+                snapshot.forEach(doc => {
+                    messagesData.push({ id: doc.id, ...doc.data() });
+                });
+                // Sort messages by timestamp if not already ordered by query
+                messagesData.sort((a, b) => (a.timestamp?.toDate() || 0) - (b.timestamp?.toDate() || 0));
+                chatMessages = messagesData; // Update state
+                updateChatUI(); // Re-render chat UI
+            }, (error) => {
+                console.error("Error listening to chat messages:", error);
+                showMessage("Failed to load chat messages.", "error");
+            });
+        }
+
+        async function offerRide() {
+            if (!loggedInUser) {
+                showMessage('Please login to offer a ride.', 'warning');
+                return;
+            }
+
+            const from = offerPickupInput.value.trim();
+            const to = offerDropInput.value.trim();
+            const vehicleType = offerVehicleTypeSelect.value;
+            const isPersonalRide = personalRideOptionCheckbox.checked;
+            let seats = parseInt(offerSeatsInput.value, 10);
+            const price = parseFloat(offerPriceInput.value);
+            const time = offerTimeInput.value;
+
+            if (!from || !to || isNaN(price) || price < 0 || !time || !vehicleType) {
+                showMessage('Please fill all ride details correctly.', 'warning');
+                return;
+            }
+            
+            // If it's a personal ride, seats available for sharing is 0
+            if (isPersonalRide) {
+                seats = 0;
+            } else if (isNaN(seats) || seats <= 0) {
+                showMessage('Please enter valid seats available for sharing.', 'warning');
+                return;
+            }
+
+            try {
+                // For Jaipur-only, we'll assume coordinates are within Jaipur or use a default
+                // In a real app with Places Autocomplete, you'd get precise lat/lng from the selected place
+                const pickupCoords = JAIPUR_CENTER; // Default to Jaipur center
+                const dropCoords = JAIPUR_CENTER; // Default to Jaipur center
+
+                // Simulate sending email to backend receiver
+                console.log(`--- Backend Notification (New Ride Offer) ---`);
+                console.log(`To: ${BACKEND_RECEIVER_EMAIL}`);
+                console.log(`Subject: New Ride Offer from ${loggedInUser.email}`);
+                console.log(`Body: A new ride has been offered:`);
+                console.log(`  Driver: ${loggedInUser.email} (ID: ${currentUserId})`);
+                console.log(`  From: ${from}`);
+                console.log(`  To: ${to}`);
+                console.log(`  Vehicle Type: ${vehicleType}`);
+                console.log(`  Personal Ride: ${isPersonalRide ? 'Yes' : 'No'}`);
+                console.log(`  Seats Available: ${seats}`);
+                console.log(`  Price: ₹${price}`);
+                console.log(`  Departure Time: ${new Date(time).toLocaleString()}`);
+                console.log(`-----------------------------------------`);
+
+                await addDoc(collection(db, `artifacts/${appId}/public/data/rides`), {
+                    driverId: currentUserId,
+                    driverEmail: loggedInUser.email,
+                    from: from,
+                    to: to,
+                    vehicleType: vehicleType,
+                    isPersonalRide: isPersonalRide,
+                    seatsAvailable: seats,
+                    price: price,
+                    departureTime: new Date(time).toISOString(),
+                    pickupLat: pickupCoords.lat,
+                    pickupLng: pickupCoords.lng,
+                    dropLat: dropCoords.lat,
+                    dropLng: dropCoords.lng,
+                    status: 'active',
+                    createdAt: serverTimestamp(),
+                    requests: []
+                });
+                showMessage('Ride offered successfully!', 'success');
+                // Clear form
+                offerPickupInput.value = '';
+                offerDropInput.value = '';
+                offerSeatsInput.value = '';
+                offerPriceInput.value = '';
+                offerTimeInput.value = '';
+                offerVehicleTypeSelect.value = 'Car'; // Reset to default
+                personalRideOptionCheckbox.checked = false; // Reset checkbox
+                updateSeatsInput(); // Reset seats input state
+
+            } catch (error) {
+                console.error("Error offering ride:", error);
+                showMessage(`Failed to offer ride: ${error.message}`, 'error');
+            }
+        }
+
+
+        // --- Event Listeners ---
+
+        // Handle find ride shares
+        findRidesButton.addEventListener("click", () => {
+            if (!loggedInUser) {
+                showMessage('Please login to find rides.', 'warning');
+                return;
+            }
+
+            pickup = pickupInput.value.trim();
+            drop = dropInput.value.trim();
+            const searchVehicleType = searchVehicleTypeSelect.value;
+            const searchIsPersonalRide = searchPersonalRideRadio.checked; // True if personal, false if shared
+
+            if (!pickup || !drop) {
+                showMessage('Please enter both pickup and drop locations to search.', 'warning');
+                return;
+            }
+
+            // Build Firestore query
+            const ridesCollectionRef = collection(db, `artifacts/${appId}/public/data/rides`);
+            let q = query(ridesCollectionRef, 
+                          where('from', '==', pickup), 
+                          where('to', '==', drop));
+            
+            if (searchVehicleType) {
+                q = query(q, where('vehicleType', '==', searchVehicleType));
+            }
+
+            q = query(q, where('isPersonalRide', '==', searchIsPersonalRide));
+
+            // If searching for shared rides, also filter by seatsAvailable > 0
+            if (!searchIsPersonalRide) {
+                q = query(q, where('seatsAvailable', '>', 0));
+            }
+
+
+            onSnapshot(q, (snapshot) => {
+                const ridesData = [];
+                snapshot.forEach(doc => {
+                    ridesData.push({ id: doc.id, ...doc.data() });
+                });
+                matchedRides = ridesData; // Update state
+                renderRideCards(); // Re-render UI with new data
+
+                if (userLocation && matchedRides.length > 0) {
+                    loadGoogleMapsScript("YOUR_GOOGLE_MAPS_API_KEY", () => { // Replace with your actual API key
+                        const directionsService = new window.google.maps.DirectionsService();
+                        directionsService.route(
+                            {
+                                origin: userLocation,
+                                destination: { lat: matchedRides[0].dropLat, lng: matchedRides[0].dropLng },
+                                travelMode: window.google.maps.TravelMode.DRIVING
+                            },
+                            (result, status) => {
+                                if (status === window.google.maps.DirectionsStatus.OK) {
+                                    directions = result; // Update state
+                                    renderRideCards(); // Re-render to show directions on the first map
+                                } else {
+                                    console.error("Directions request failed:", status);
+                                }
+                            }
+                        );
+                    });
+                } else if (!userLocation) {
+                    showMessage("Your location is not available. Please enable location services.", "warning");
+                }
+            }, (error) => {
+                console.error("Error searching rides:", error);
+                showMessage("Failed to search rides. Please try again.", "error");
+            });
+        });
+
+        // Toggle chat window visibility
+        chatToggleButton.addEventListener("click", () => {
+            if (!loggedInUser) {
+                showMessage('Please login to use chat.', 'warning');
+                return;
+            }
+            chatVisible = !chatVisible;
+            if (chatVisible) {
+                chatWindow.classList.add("visible");
+                updateChatUI(); // Ensure messages are rendered when chat opens
+            } else {
+                chatWindow.classList.remove("visible");
+            }
+        });
+
+        // Close chat window
+        closeChatButton.addEventListener("click", () => {
+            chatVisible = false;
+            chatWindow.classList.remove("visible");
+        });
+
+        // Handle chat message submission
+        async function handleChatSubmit() {
+            const currentInput = chatInputField.value.trim();
+            if (!currentInput) return;
+            if (!loggedInUser) {
+                showMessage('Please login to send chat messages.', 'warning');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/public/data/chat_messages`), {
+                    senderId: currentUserId,
+                    senderEmail: loggedInUser.email || 'Anonymous',
+                    text: currentInput,
+                    timestamp: serverTimestamp() // Use Firestore server timestamp
+                });
+                chatInputField.value = ""; // Clear input field
+            } catch (error) {
+                console.error("Error sending chat message:", error);
+                showMessage("Failed to send message.", "error");
+            }
+        }
+
+        chatSendButton.addEventListener("click", handleChatSubmit);
+        chatInputField.addEventListener("keypress", (e) => {
+            if (e.key === 'Enter') {
+                handleChatSubmit();
+            }
+        });
+
+        // Auth form toggles
+        showLoginButton.addEventListener('click', () => {
+            currentAuthMode = 'login';
+            authHeading.textContent = 'Login to EcoRide';
+            loginForm.style.display = 'flex';
+            signupForm.style.display = 'none';
+            showLoginButton.classList.add('active');
+            showSignupButton.classList.remove('active');
+        });
+
+        showSignupButton.addEventListener('click', () => {
+            currentAuthMode = 'signup';
+            authHeading.textContent = 'Sign Up for EcoRide';
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'flex';
+            showSignupButton.classList.add('active');
+            showLoginButton.classList.remove('active');
+        });
+
+        loginSubmitButton.addEventListener('click', handleLogin);
+        signupSubmitButton.addEventListener('click', handleSignup);
+        logoutButton.addEventListener('click', handleLogout);
+        offerRideButton.addEventListener('click', offerRide); // New event listener for offering rides
+
+        // Logic for Offer Ride section dynamic inputs
+        function updateSeatsInput() {
+            const vehicleType = offerVehicleTypeSelect.value;
+            const isPersonal = personalRideOptionCheckbox.checked;
+            
+            offerSeatsInput.disabled = isPersonal; // Disable if personal ride
+            if (isPersonal) {
+                offerSeatsInput.value = 0; // Seats for sharing is 0 for personal rides
+            } else {
+                // Set max seats based on vehicle type for sharing
+                switch (vehicleType) {
+                    case 'Bike':
+                        offerSeatsInput.max = 1; // Driver + 1 pillion
+                        if (offerSeatsInput.value > 1) offerSeatsInput.value = 1;
+                        break;
+                    case 'Auto':
+                        offerSeatsInput.max = 3; // Driver + 3 passengers
+                        if (offerSeatsInput.value > 3) offerSeatsInput.value = 3;
+                        break;
+                    case 'Car':
+                        offerSeatsInput.max = 4; // Driver + 4 passengers
+                        if (offerSeatsInput.value > 4) offerSeatsInput.value = 4;
+                        break;
+                    default:
+                        offerSeatsInput.max = 4; // Default for safety
+                        break;
+                }
+            }
+        }
+
+        offerVehicleTypeSelect.addEventListener('change', updateSeatsInput);
+        personalRideOptionCheckbox.addEventListener('change', updateSeatsInput);
+
+
+        // --- Initial Load Logic (mimicking useEffect) ---
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!auth) {
+                showMessage("Firebase Authentication is not initialized. Please check configuration.", "error", 5000);
+                return;
+            }
+
+            // Firebase Auth State Listener
+            onAuthStateChanged(auth, (user) => {
+                loggedInUser = user; // Update the global state
+                currentUserId = user ? user.uid : null; // Set currentUserId
+                updateAuthUI(); // Update UI based on auth state
+
+                if (user) {
+                    // If user is logged in, try to get location
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition((position) => {
+                            userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            console.log("User location determined:", userLocation);
+                        }, (error) => {
+                            console.error("Geolocation error:", error.code, error.message);
+                            let errorMessage = "Unable to retrieve your location.";
+                            if (error.message.includes("permissions policy")) {
+                                errorMessage = "Geolocation is disabled in this document by your browser's permissions policy. Please ensure location access is allowed for this page.";
+                            } else {
+                                switch(error.code) {
+                                    case error.PERMISSION_DENIED:
+                                        errorMessage = "Location access denied. Please enable location services in your browser settings to use this feature.";
+                                        break;
+                                    case error.POSITION_UNAVAILABLE:
+                                        errorMessage = "Location information is unavailable.";
+                                        break;
+                                    case error.TIMEOUT:
+                                        errorMessage = "The request to get user location timed out.";
+                                        break;
+                                    default:
+                                        errorMessage = "An unknown error occurred while getting your location.";
+                                        break;
+                                }
+                            }
+                            noRidesMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`;
+                            noRidesMessage.style.display = 'block';
+                        });
+                    } else {
+                        noRidesMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Geolocation is not supported by your browser.';
+                        noRidesMessage.style.display = 'block';
+                    }
+                } else {
+                    userLocation = null; // Clear user location if logged out
+                }
+            });
+
+            // Perform initial authentication for Canvas environment
+            handleInitialAuth();
+
+            // Initial setup for offer ride seats input
+            updateSeatsInput();
+
+            // Load Google Maps script with Places library and initialize Autocomplete
+            loadGoogleMapsScript("YOUR_GOOGLE_MAPS_API_KEY", initAutocomplete); // Replace with your actual API key
+        });
+    </script>
+</body>
+</html>
