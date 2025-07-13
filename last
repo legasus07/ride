@@ -1,0 +1,170 @@
+import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
+import { FaComments, FaCreditCard } from "react-icons/fa";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+// Firebase config from ride-along-a38a9
+const firebaseConfig = {
+  apiKey: "AIzaSyA0EjsdGM2BDdsChLI2F4mEnm97W_E_up0",
+  authDomain: "ride-along-a38a9.firebaseapp.com",
+  projectId: "ride-along-a38a9",
+  storageBucket: "ride-along-a38a9.appspot.com",
+  messagingSenderId: "903343766427",
+  appId: "1:903343766427:android:711e9e1e4dfdbb828cff3e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const containerStyle = {
+  width: "100%",
+  height: "400px"
+};
+
+const RideShareApp = () => {
+  const [pickup, setPickup] = useState("");
+  const [drop, setDrop] = useState("");
+  const [matchedRides, setMatchedRides] = useState([]);
+  const [chatVisible, setChatVisible] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [directions, setDirections] = useState(null);
+  const [chatMessages, setChatMessages] = useState([
+    { sender: "bot", text: "Hi! Need help booking a ride?" }
+  ]);
+  const [userInput, setUserInput] = useState("");
+
+  const dummyRides = [
+    { id: 1, from: "Jaipur", to: "Gurgaon", seats: 2, lat: 28.4595, lng: 77.0266 },
+    { id: 2, from: "Jaipur", to: "Delhi", seats: 1, lat: 28.6139, lng: 77.2090 },
+    { id: 3, from: "Jaipur", to: "Gurgaon", seats: 3, lat: 28.4595, lng: 77.0266 }
+  ];
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+      });
+    }
+  }, []);
+
+  const findRideShares = () => {
+    const matches = dummyRides.filter(
+      (ride) => ride.from.toLowerCase() === pickup.toLowerCase() && ride.to.toLowerCase() === drop.toLowerCase()
+    );
+    setMatchedRides(matches);
+
+    if (userLocation && matches.length > 0) {
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: userLocation,
+          destination: { lat: matches[0].lat, lng: matches[0].lng },
+          travelMode: window.google.maps.TravelMode.DRIVING
+        },
+        (result, status) => {
+          if (status === window.google.maps.DirectionsStatus.OK) {
+            setDirections(result);
+          }
+        }
+      );
+    }
+  };
+
+  const handleChatSubmit = () => {
+    if (!userInput.trim()) return;
+
+    const newMessage = { sender: "user", text: userInput };
+    const reply = { sender: "bot", text: `Thanks for your message! We'll get back to you shortly.` };
+
+    setChatMessages([...chatMessages, newMessage, reply]);
+    setUserInput("");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6 relative">
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800">EcoRide - Smart Ride Sharing</h1>
+        <p className="text-lg text-gray-600 mt-2">Save money and the planet. Share your ride with others going the same way.</p>
+      </header>
+
+      <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-4">
+        <Input placeholder="Pickup Location" value={pickup} onChange={(e) => setPickup(e.target.value)} />
+        <Input placeholder="Drop Location" value={drop} onChange={(e) => setDrop(e.target.value)} />
+        <Button onClick={findRideShares} className="w-full">Find Shared Rides</Button>
+      </div>
+
+      <section className="mt-8 max-w-4xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-4">Available Shared Rides</h2>
+        {matchedRides.length > 0 ? (
+          <div className="grid gap-4">
+            {matchedRides.map((ride, index) => (
+              <motion.div key={ride.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                <Card className="rounded-xl shadow-md">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold">From: {ride.from} → To: {ride.to}</h3>
+                    <p>Seats Available: {ride.seats}</p>
+                    <div className="mt-4">
+                      <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                        <GoogleMap
+                          mapContainerStyle={containerStyle}
+                          center={userLocation || { lat: ride.lat, lng: ride.lng }}
+                          zoom={10}
+                        >
+                          {userLocation && <Marker position={userLocation} label="You" />}
+                          <Marker position={{ lat: ride.lat, lng: ride.lng }} label="Ride" />
+                          {index === 0 && directions && <DirectionsRenderer directions={directions} />}
+                        </GoogleMap>
+                      </LoadScript>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button className="flex-1">Request to Join</Button>
+                      <Button className="flex-1" variant="outline">
+                        <FaCreditCard className="mr-2" /> Pay ₹200
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No rides found. Try different locations.</p>
+        )}
+      </section>
+
+      {chatVisible && (
+        <div className="fixed bottom-20 right-4 w-80 h-96 bg-white shadow-lg rounded-xl p-4 flex flex-col">
+          <h4 className="font-semibold mb-2">Support Chat</h4>
+          <div className="bg-gray-100 p-2 rounded h-64 overflow-y-auto text-sm mb-2">
+            {chatMessages.map((msg, idx) => (
+              <p key={idx}><strong>{msg.sender === "bot" ? "Bot" : "You"}:</strong> {msg.text}</p>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input value={userInput} onChange={(e) => setUserInput(e.target.value)} placeholder="Type your message..." />
+            <Button onClick={handleChatSubmit}>Send</Button>
+          </div>
+        </div>
+      )}
+
+      <Button
+        onClick={() => setChatVisible(!chatVisible)}
+        className="fixed bottom-4 right-4 rounded-full p-4 shadow-lg"
+      >
+        <FaComments className="w-5 h-5" />
+      </Button>
+    </div>
+  );
+};
+
+export default RideShareApp;
