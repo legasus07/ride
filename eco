@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Stitch - AI-Powered Fashion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F3;
+            color: #1a1a1a;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .hero-section {
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .outfit-builder-base {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .outfit-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.4s ease-in-out;
+            pointer-events: none;
+        }
+        .option-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .option-card.selected {
+            border-color: #3A5A40;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+            transform: scale(1.05);
+        }
+        .ai-chat-bubble {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gender-tab {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .gender-tab.active {
+            color: #1a1a1a;
+            border-bottom-color: #3A5A40;
+        }
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Modal styles */
+        .modal-overlay-custom {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content-custom {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-colors duration-500" id="header">
+        <div class="container mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
+                <a href="#" class="flex items-center space-x-2">
+                    <i data-lucide="leaf" class="w-8 h-8 transition-colors duration-500" id="header-logo"></i>
+                    <span class="text-2xl font-bold font-playfair transition-colors duration-500" id="header-text">Eco Stitch</span>
+                </a>
+                <nav class="hidden md:flex space-x-10 text-sm font-semibold tracking-wider uppercase">
+                    <a href="#outfit-builder" class="transition-colors duration-500">Create</a>
+                    <a href="#about" class="transition-colors duration-500">Our Story</a>
+                    <a href="#" class="transition-colors duration-500">Shop</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section flex items-end text-white">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="container mx-auto px-6 lg:px-8 pb-20 text-center relative z-10">
+            <h1 class="text-5xl md:text-8xl font-playfair mb-4 reveal">Wear Your Story.</h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8 reveal" style="transition-delay: 200ms;">Sustainable beachwear for him and her. Design your perfect look with our AI stylist.</p>
+            <a href="#outfit-builder" class="bg-white text-gray-800 hover:bg-gray-200 font-bold py-3 px-8 rounded-full text-lg transition-transform duration-300 transform hover:scale-105 reveal" style="transition-delay: 400ms;">
+                Create Your Outfit
+            </a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="bg-[#F5F5F3]">
+        
+        <!-- Choose Your Outfit Section -->
+        <section id="outfit-builder" class="py-24">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-12 reveal">
+                    <h2 class="text-4xl md:text-5xl font-playfair text-gray-800">Your Personal Stylist</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Use our AI to find the perfect look or build your own.</p>
+                </div>
+
+                <!-- Gender Selection Tabs -->
+                <div class="flex justify-center border-b mb-12 reveal">
+                    <div id="womens-tab" class="gender-tab active text-2xl font-playfair py-2 px-8">Womenswear</div>
+                    <div id="mens-tab" class="gender-tab text-gray-500 text-2xl font-playfair py-2 px-8">Menswear</div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 items-start">
+                    
+                    <!-- Options & AI Column -->
+                    <div class="lg:col-span-1 order-2 lg:order-1">
+                        <!-- AI Helper UI -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-12 reveal">
+                            <h3 class="text-2xl font-playfair mb-4 flex items-center"><i data-lucide="sparkles" class="w-6 h-6 mr-2 text-purple-500"></i>AI Style Advisor</h3>
+                            <p class="text-gray-600 mb-4 text-sm">Tell me your budget, and I'll suggest the perfect outfit!</p>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-gray-200 p-2 rounded-l-md">$</span>
+                                <input type="number" id="budget-input" placeholder="Enter your budget" class="w-full p-2 border-t border-b border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                <button id="ai-suggest-btn" class="bg-purple-500 text-white p-2 rounded-r-md hover:bg-purple-600 transition-colors flex items-center justify-center w-12">Go</button>
+                            </div>
+                            <div id="ai-suggestions" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Manual Selection -->
+                        <div class="reveal">
+                            <h3 class="text-2xl font-playfair mb-6">Or, Build Your Own</h3>
+                            <!-- Womenswear Options -->
+                            <div id="womens-options">
+                                <div class="mb-8">
+                                    <h4 class="font-semibold mb-4 text-lg">Tops</h4>
+                                    <div class="grid grid-cols-2 gap-4" id="womens-tops-options">
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="top" data-layer="https://i.ibb.co/bFz0wzM/top1-cream.png" data-name="Cream Knit Top" data-price="85">
+                                            <img src="https://i.ibb.co/bFz0wzM/top1-cream.png" alt="Cream Knit Top" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="top" data-layer="https://i.ibb.co/k3t2yCq/top2-green.png" data-name="Green Silk Blouse" data-price="110">
+                                            <img src="https://i.ibb.co/k3t2yCq/top2-green.png" alt="Green Silk Blouse" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-4 text-lg">Bottoms</h4>
+                                    <div class="grid grid-cols-2 gap-4" id="womens-bottoms-options">
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="bottom" data-layer="https://i.ibb.co/yY5gG0W/bottom1-jeans.png" data-name="Classic Denim" data-price="125">
+                                            <img src="https://i.ibb.co/yY5gG0W/bottom1-jeans.png" alt="Classic Denim Jeans" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="bottom" data-layer="https://i.ibb.co/n6jWpM0/bottom2-skirt.png" data-name="Beige Linen Skirt" data-price="95">
+                                            <img src="https://i.ibb.co/n6jWpM0/bottom2-skirt.png" alt="Beige Linen Skirt" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Menswear Options -->
+                            <div id="mens-options" class="hidden">
+                                <div class="mb-8">
+                                    <h4 class="font-semibold mb-4 text-lg">Tops</h4>
+                                    <div class="grid grid-cols-2 gap-4" id="mens-tops-options">
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="top" data-layer="https://i.ibb.co/fHkYkLg/men-top1-shirt.png" data-name="Linen Button-Up" data-price="115">
+                                            <img src="https://i.ibb.co/fHkYkLg/men-top1-shirt.png" alt="Linen Button-Up" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="top" data-layer="https://i.ibb.co/tZ5GZg8/men-top2-tee.png" data-name="Organic Cotton Tee" data-price="55">
+                                            <img src="https://i.ibb.co/tZ5GZg8/men-top2-tee.png" alt="Organic Cotton Tee" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="top" data-layer="https://i.ibb.co/bX1g0Bf/men-top3-whitetee-layer.png" data-name="Classic White Tee" data-price="60">
+                                            <img src="https://i.ibb.co/M8pC6P5/men-top3-whitetee.png" alt="Classic White Tee" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-4 text-lg">Bottoms</h4>
+                                    <div class="grid grid-cols-2 gap-4" id="mens-bottoms-options">
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="bottom" data-layer="https://i.ibb.co/pwnxYkH/men-bottom1-shorts.png" data-name="Chino Shorts" data-price="75">
+                                            <img src="https://i.ibb.co/pwnxYkH/men-bottom1-shorts.png" alt="Chino Shorts" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="bottom" data-layer="https://i.ibb.co/y6B4Xf3/men-bottom2-trousers.png" data-name="Linen Trousers" data-price="130">
+                                            <img src="https://i.ibb.co/y6B4Xf3/men-bottom2-trousers.png" alt="Linen Trousers" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                        <div class="option-card bg-white rounded-lg p-2" data-type="bottom" data-layer="https://i.ibb.co/Kz5jJzW/men-bottom3-trousers-dark-layer.png" data-name="Wide-Leg Trousers" data-price="145">
+                                            <img src="https://i.ibb.co/7QyW0gH/men-bottom3-trousers-dark.png" alt="Wide-Leg Trousers" class="rounded-md w-full h-auto object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mannequin Column -->
+                    <div class="lg:col-span-2 order-1 lg:order-2 sticky top-24 reveal">
+                        <div class="bg-white rounded-lg shadow-lg p-4 aspect-w-3 aspect-h-4">
+                            <!-- Womenswear Mannequin -->
+                            <div id="womens-mannequin" class="outfit-builder-base">
+                                <img src="https://i.ibb.co/dGjC89S/mannequin-base.png" alt="Mannequin" class="outfit-layer opacity-100">
+                                <img src="" alt="Selected Top" id="womens-top-layer" class="outfit-layer opacity-0">
+                                <img src="" alt="Selected Bottom" id="womens-bottom-layer" class="outfit-layer opacity-0">
+                            </div>
+                            <!-- Menswear Mannequin -->
+                            <div id="mens-mannequin" class="outfit-builder-base hidden">
+                                <img src="https://i.ibb.co/s5Yy0gT/mannequin-base-male.png" alt="Male Mannequin" class="outfit-layer opacity-100">
+                                <img src="" alt="Selected Top" id="mens-top-layer" class="outfit-layer opacity-0">
+                                <img src="" alt="Selected Bottom" id="mens-bottom-layer" class="outfit-layer opacity-0">
+                            </div>
+                        </div>
+                        <div class="text-center mt-6">
+                            <p class="text-2xl font-bold mb-4" id="total-price">$0</p>
+                            <div id="description-container" class="min-h-[60px]"></div>
+                            <div class="flex items-center justify-center space-x-4">
+                                <button id="describe-look-btn" class="bg-indigo-500 text-white font-bold py-3 px-6 rounded-full text-lg hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center mx-auto disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    <i data-lucide="wand-2" class="w-6 h-6 mr-3"></i>
+                                    ✨ Describe Your Look
+                                </button>
+                                <button id="visualize-btn" class="bg-green-800 text-white font-bold py-3 px-6 rounded-full text-lg hover:bg-green-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center mx-auto">
+                                    <i data-lucide="camera" class="w-6 h-6 mr-3"></i>
+                                    Visualize & Add to Bag
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-24 bg-white">
+            <div class="container mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl font-playfair text-gray-800 mb-6">Conscious by Design.</h2>
+                    <p class="text-gray-600 mb-4 text-lg">Eco Stitch isn't just a brand; it's a belief. A belief that style and sustainability are not mutually exclusive. We started with a simple mission: to create beautiful, high-quality garments that honor both the planet and the people who craft them.</p>
+                </div>
+                <div class="reveal">
+                    <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1974&auto=format&fit=crop" alt="Fashion designer's workshop" class="rounded-lg shadow-xl w-full h-auto object-cover">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Visualization Modal -->
+    <div id="visualize-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <!-- Overlay -->
+        <div id="modal-overlay" class="absolute inset-0 bg-black/60 modal-overlay-custom opacity-0"></div>
+        
+        <!-- Content -->
+        <div id="modal-content" class="relative bg-white rounded-lg shadow-xl w-full max-w-lg transform scale-95 modal-content-custom">
+            <div class="p-8 text-center">
+                <button id="modal-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <h2 class="text-3xl font-playfair mb-4">Virtual Try-On</h2>
+                <p class="text-gray-600 mb-8">To visualize this outfit, please provide a full-body photo of yourself.</p>
+                <div class="space-y-4">
+                    <label for="upload-photo-input" class="w-full cursor-pointer bg-gray-100 text-gray-800 font-bold py-4 px-6 rounded-lg hover:bg-gray-200 transition-colors duration-300 flex items-center justify-center text-lg">
+                        <i data-lucide="upload" class="w-6 h-6 mr-3"></i>
+                        Upload Photo
+                    </label>
+                    <input type="file" id="upload-photo-input" class="hidden" accept="image/*">
+                    
+                    <button id="take-photo-btn" class="w-full bg-gray-800 text-white font-bold py-4 px-6 rounded-lg hover:bg-black transition-colors duration-300 flex items-center justify-center text-lg">
+                        <i data-lucide="camera" class="w-6 h-6 mr-3"></i>
+                        Take Photo
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-6">For best results, use a well-lit photo where you are facing forward.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            let activeGender = 'womens';
+            let selections = {
+                womens: { top: null, bottom: null },
+                mens: { top: null, bottom: null }
+            };
+
+            const womensTab = document.getElementById('womens-tab');
+            const mensTab = document.getElementById('mens-tab');
+            const womensOptions = document.getElementById('womens-options');
+            const mensOptions = document.getElementById('mens-options');
+            const womensMannequin = document.getElementById('womens-mannequin');
+            const mensMannequin = document.getElementById('mens-mannequin');
+            const totalPriceEl = document.getElementById('total-price');
+            const describeLookBtn = document.getElementById('describe-look-btn');
+            const descriptionContainer = document.getElementById('description-container');
+            
+            // Modal elements
+            const visualizeModal = document.getElementById('visualize-modal');
+            const visualizeBtn = document.getElementById('visualize-btn');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+
+            function updatePriceAndDescribeButton() {
+                const topSelection = selections[activeGender].top;
+                const bottomSelection = selections[activeGender].bottom;
+                const topPrice = topSelection ? parseInt(topSelection.dataset.price) : 0;
+                const bottomPrice = bottomSelection ? parseInt(bottomSelection.dataset.price) : 0;
+                totalPriceEl.textContent = `$${topPrice + bottomPrice}`;
+                
+                if (topSelection && bottomSelection) {
+                    describeLookBtn.disabled = false;
+                } else {
+                    describeLookBtn.disabled = true;
+                    descriptionContainer.innerHTML = '';
+                }
+            }
+
+            function resetSelections() {
+                document.querySelectorAll('.option-card.selected').forEach(c => c.classList.remove('selected'));
+                document.querySelectorAll('.outfit-layer').forEach(l => {
+                    if (!l.src.includes('base')) {
+                        l.classList.add('opacity-0');
+                    }
+                });
+                selections = {
+                    womens: { top: null, bottom: null },
+                    mens: { top: null, bottom: null }
+                };
+                updatePriceAndDescribeButton();
+            }
+
+            function switchGender(gender) {
+                activeGender = gender;
+                resetSelections();
+                womensTab.classList.toggle('active', gender === 'womens');
+                womensTab.classList.toggle('text-gray-500', gender !== 'womens');
+                mensTab.classList.toggle('active', gender === 'mens');
+                mensTab.classList.toggle('text-gray-500', gender !== 'mens');
+                womensOptions.classList.toggle('hidden', gender !== 'womens');
+                mensOptions.classList.toggle('hidden', gender !== 'mens');
+                womensMannequin.classList.toggle('hidden', gender !== 'womens');
+                mensMannequin.classList.toggle('hidden', gender !== 'mens');
+            }
+
+            function selectCard(card) {
+                if (!card) return;
+                const type = card.dataset.type;
+                const layer = document.getElementById(`${activeGender}-${type}-layer`);
+                
+                card.classList.add('selected');
+                selections[activeGender][type] = card;
+                layer.src = card.dataset.layer;
+                layer.classList.remove('opacity-0');
+                updatePriceAndDescribeButton();
+            }
+
+            function handleOptionClick(e) {
+                const card = e.target.closest('.option-card');
+                if (!card) return;
+                const type = card.dataset.type;
+                const parentContainer = card.closest(`#${activeGender}-${type}s-options`);
+                const isSelected = card.classList.contains('selected');
+                parentContainer.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                const layer = document.getElementById(`${activeGender}-${type}-layer`);
+                if (isSelected) {
+                    selections[activeGender][type] = null;
+                    layer.classList.add('opacity-0');
+                } else {
+                   selectCard(card);
+                }
+                updatePriceAndDescribeButton();
+            }
+
+            womensTab.addEventListener('click', () => switchGender('womens'));
+            mensTab.addEventListener('click', () => switchGender('mens'));
+            document.getElementById('womens-options').addEventListener('click', handleOptionClick);
+            document.getElementById('mens-options').addEventListener('click', handleOptionClick);
+            
+            const header = document.getElementById('header');
+            const handleScroll = () => {
+                const isScrolled = window.scrollY > 50;
+                header.classList.toggle('bg-white/80', isScrolled);
+                header.classList.toggle('backdrop-blur-md', isScrolled);
+                header.classList.toggle('shadow-sm', isScrolled);
+                document.getElementById('header-text').classList.toggle('text-white', !isScrolled);
+                document.getElementById('header-text').classList.toggle('text-gray-800', isScrolled);
+                document.getElementById('header-logo').classList.toggle('text-white', !isScrolled);
+                document.getElementById('header-logo').classList.toggle('text-gray-800', isScrolled);
+                document.querySelectorAll('header nav a').forEach(link => {
+                    link.classList.toggle('text-white', !isScrolled);
+                    link.classList.toggle('text-gray-600', isScrolled);
+                });
+            };
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // --- MODAL LOGIC ---
+            function openModal() {
+                visualizeModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => {
+                    modalOverlay.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+            }
+
+            function closeModal() {
+                modalOverlay.classList.add('opacity-0');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    visualizeModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+
+            visualizeBtn.addEventListener('click', openModal);
+            modalOverlay.addEventListener('click', closeModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            
+            // --- GEMINI API INTEGRATION ---
+            const aiSuggestBtn = document.getElementById('ai-suggest-btn');
+            const budgetInput = document.getElementById('budget-input');
+            const aiSuggestionsContainer = document.getElementById('ai-suggestions');
+            const apiKey = ""; // Leave empty, will be handled by the environment
+
+            async function callGemini(prompt) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                    }
+                };
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`API call failed with status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error("Gemini API call error:", error);
+                    return null;
+                }
+            }
+
+            aiSuggestBtn.addEventListener('click', async () => {
+                const budget = parseInt(budgetInput.value);
+                if (isNaN(budget) || budget <= 0) {
+                    aiSuggestionsContainer.innerHTML = `<p class="text-red-500 text-sm ai-chat-bubble">Please enter a valid budget.</p>`;
+                    return;
+                }
+                
+                aiSuggestBtn.innerHTML = `<div class="loader"></div>`;
+                aiSuggestBtn.disabled = true;
+
+                const optionsContainer = document.getElementById(`${activeGender}-options`);
+                const tops = Array.from(optionsContainer.querySelectorAll('[data-type="top"]')).map(c => ({ name: c.dataset.name, price: parseInt(c.dataset.price) }));
+                const bottoms = Array.from(optionsContainer.querySelectorAll('[data-type="bottom"]')).map(c => ({ name: c.dataset.name, price: parseInt(c.dataset.price) }));
+
+                const prompt = `
+                    You are a fashion stylist for a sustainable brand called Eco Stitch.
+                    A customer is looking for a ${activeGender} outfit with a maximum budget of $${budget}.
+                    Here are the available items:
+                    Tops: ${JSON.stringify(tops)}
+                    Bottoms: ${JSON.stringify(bottoms)}
+
+                    Find the best complete outfit (one top and one bottom) that is within the budget. Prioritize getting as close to the budget as possible without going over.
+                    If no complete outfit is possible, suggest the best single item.
+                    Respond ONLY with a JSON object with the following structure:
+                    { "top": "Item Name" or null, "bottom": "Item Name" or null, "comment": "A brief, friendly comment about your choice." }
+                `;
+                
+                const resultText = await callGemini(prompt);
+                
+                if (resultText) {
+                    try {
+                        const resultJson = JSON.parse(resultText);
+                        aiSuggestionsContainer.innerHTML = `<p class="text-purple-700 text-sm ai-chat-bubble font-semibold">${resultJson.comment}</p>`;
+                        
+                        resetSelections();
+                        
+                        if(resultJson.top) {
+                            const topCard = Array.from(optionsContainer.querySelectorAll('[data-type="top"]')).find(c => c.dataset.name === resultJson.top);
+                            selectCard(topCard);
+                        }
+                        if(resultJson.bottom) {
+                            const bottomCard = Array.from(optionsContainer.querySelectorAll('[data-type="bottom"]')).find(c => c.dataset.name === resultJson.bottom);
+                            selectCard(bottomCard);
+                        }
+                    } catch (e) {
+                        console.error("Error parsing Gemini JSON response:", e);
+                        aiSuggestionsContainer.innerHTML = `<p class="text-red-500 text-sm ai-chat-bubble">Sorry, I had trouble understanding the response.</p>`;
+                    }
+                } else {
+                    aiSuggestionsContainer.innerHTML = `<p class="text-red-500 text-sm ai-chat-bubble">Sorry, I couldn't get a suggestion right now. Please try again.</p>`;
+                }
+
+                aiSuggestBtn.innerHTML = `Go`;
+                aiSuggestBtn.disabled = false;
+            });
+
+            describeLookBtn.addEventListener('click', async () => {
+                const topName = selections[activeGender].top?.dataset.name;
+                const bottomName = selections[activeGender].bottom?.dataset.name;
+
+                if (!topName || !bottomName) return;
+
+                const originalBtnContent = describeLookBtn.innerHTML;
+                describeLookBtn.innerHTML = `<div class="loader"></div>`;
+                describeLookBtn.disabled = true;
+
+                const prompt = `
+                    You are a fashion copywriter for a sustainable brand called Eco Stitch.
+                    Create a short, stylish, and appealing description (20-30 words) for the following outfit combination:
+                    Top: "${topName}"
+                    Bottom: "${bottomName}"
+                    Focus on the feeling, style, and sustainable nature of the look.
+                    Respond ONLY with the description text, no extra formatting.
+                `;
+
+                const description = await callGemini(prompt);
+                
+                if (description) {
+                    descriptionContainer.innerHTML = `<p class="text-gray-700 italic ai-chat-bubble p-2 bg-gray-100 rounded-md">${description.replace(/"/g, '')}</p>`;
+                } else {
+                    descriptionContainer.innerHTML = `<p class="text-red-500 text-sm ai-chat-bubble">Could not generate a description at this time.</p>`;
+                }
+                
+                describeLookBtn.innerHTML = originalBtnContent;
+                describeLookBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
